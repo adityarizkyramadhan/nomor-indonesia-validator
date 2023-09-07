@@ -1,0 +1,20 @@
+{
+  "name": "nomor-indonesia-validator",
+  "version": "1.0.0",
+  "description": "Membuat validasi nomor telepon di Indonesia",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Aditya Rizky Ramadhan",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adityarizkyramadhan/nomor-indonesia-validator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adityarizkyramadhan/nomor-indonesia-validator/issues"
+  },
+  "homepage": "https://github.com/adityarizkyramadhan/nomor-indonesia-validator#readme"
+}
