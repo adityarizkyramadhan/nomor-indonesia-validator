@@ -39,24 +39,92 @@ const penyediaLayanan = {
     "888": "Smartfren",
     "889": "Smartfren"
 };
-
-
+const MengandungHurufError = new Error("nomor ponsel mengandung huruf");
+const PanjangTidakSesuaiError = new Error("Panjang nomor ponsel tidak sesuai standar");
+const PrefixError = new Error("nomor telepon tidak sesuai standar prefix");
+const LayananError = new Error("Layanan tidak tersedia");
 const minPanjang = 10
 const maksPanjang = 13
 
-module.exports = cekNomor = (nomor) => {
-    if (/\D/.test(nomor)) {
-        return false
+class NomorTelepon {
+    constructor(nomor) {
+        this.nomor = nomor;
+        this.nomorTanpaPrefix = "";
+        this.layanan = "";
+        this.validasi = false;
     }
 
-    if (nomor.length < minPanjang || nomor.length > maksPanjang) {
-        return false
+    validasi() {
+        const rgx = /^[0-9]*$/;
+        if (!rgx.test(this.nomor)) {
+            return MengandungHurufError;
+        }
+
+        if (this.nomor.length > maksPanjang || this.nomor.length < minPanjang) {
+            return PanjangTidakSesuaiError;
+        }
+
+        if (!(this.nomor[0] === '0' || this.nomor.substring(0, 2) === "62")) {
+            return PrefixError;
+        }
+
+        if (this.nomor[0] === '0') {
+            this.nomorTanpaPrefix = this.nomor.substring(1);
+        } else if (this.nomor.substring(0, 2) === "62") {
+            this.nomorTanpaPrefix = this.nomor.substring(2);
+        } else {
+            return PrefixError;
+        }
+
+        const layanan = penyediaLayanan[this.nomorTanpaPrefix.substring(0, 3)];
+
+        if (!layanan) {
+            return LayananError;
+        }
+
+        this.validasi = true;
+        this.layanan = layanan;
+
+        return null;
     }
 
-    if (!(nomor.substring(2) == "62" || nomor[0] == "0")) {
-        return false
+    nomorNasional() {
+        if (!this.validasi) {
+            return "validasi terlebih dahulu";
+        }
+        return "0" + this.nomorTanpaPrefix;
     }
 
+    nomorInternasional() {
+        if (!this.validasi) {
+            return "validasi terlebih dahulu";
+        }
+        return "62" + this.nomorTanpaPrefix;
+    }
 
+    penyediaLayanan() {
+        if (!this.validasi) {
+            return "validasi terlebih dahulu";
+        }
+        return this.layanan;
+    }
+
+    linkWhatsApp() {
+        return "https://api.whatsapp.com/send/?phone=" + this.NomorInternasional();
+    }
+
+    linkWhatsAppDenganPesan(pesan) {
+        const kalimat = pesan.replace(/ /g, "+");
+        return this.linkWhatsApp() + "&text=" + kalimat;
+    }
 }
 
+function cekNomor(nomor) {
+    return new NomorTelepon(nomor);
+}
+
+
+module.exports = {
+    cekNomor,
+    NomorTelepon
+}
